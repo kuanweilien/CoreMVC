@@ -7,9 +7,7 @@ namespace CoreMVC.Models
     {
         public static void Initialize(IServiceProvider serviceProvider)
         {
-            using (var context = new CoreMVCContext(
-                serviceProvider.GetRequiredService<
-                    DbContextOptions<CoreMVCContext>>()))
+            using (var context = new CoreMVCContext(serviceProvider.GetRequiredService<DbContextOptions<CoreMVCContext>>()))
             {
                 // Look for any MovieModels.
                 if (context.MovieModel.Any())
@@ -54,6 +52,35 @@ namespace CoreMVC.Models
                         Price = 3.99M
                     }
                 );
+                context.SaveChanges();
+            }
+
+            using (var context = new MariaDBContext(serviceProvider.GetRequiredService<DbContextOptions<MariaDBContext>>()))
+            {
+                if (context.StudentModel.Any())
+                {
+                    return;   // DB has been seeded
+                }
+                context.StudentModel.AddRange(
+                   new StudentModel
+                   {
+                       StudentName = "Ben",
+                       StudentNumber = 23,
+                       Sex = 1
+                   },
+                   new StudentModel
+                   {
+                       StudentName = "Sandy",
+                       StudentNumber = 24,
+                       Sex = 0
+                   }, 
+                   new StudentModel
+                   {
+                       StudentName = "David",
+                       StudentNumber = 25,
+                       Sex = 1
+                   }
+                   );
                 context.SaveChanges();
             }
         }

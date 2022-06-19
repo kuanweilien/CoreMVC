@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using CoreMVC.Models;
 
 namespace CoreMVC.Data
 {
@@ -12,5 +13,7 @@ namespace CoreMVC.Data
         }
         
         public DbSet<CoreMVC.Models.MovieModel>? MovieModel { get; set; }
+        
+        public DbSet<CoreMVC.Models.StudentModel>? StudentModel { get; set; }
     }
 }
