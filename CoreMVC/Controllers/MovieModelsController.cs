@@ -27,6 +27,7 @@ namespace CoreMVC.Controllers
         //                View(await _context.MovieModel.ToListAsync()) :
         //                Problem("Entity set 'CoreMVCContext.MovieModel'  is null.");
         //}
+
         public async Task<IActionResult> Index(string movieGenre, string searchString)
         {
             // Use LINQ to get list of genres.
@@ -54,6 +55,7 @@ namespace CoreMVC.Controllers
 
             return View(movieGenreVM);
         }
+
         //[HttpPost]
         //public string Index(string searchString, bool notUsed)
         //{
