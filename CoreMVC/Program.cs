@@ -2,10 +2,18 @@
 using Microsoft.Extensions.DependencyInjection;
 using CoreMVC.Data;
 using CoreMVC.Models;
+using Pomelo.EntityFrameworkCore.MySql;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<CoreMVCContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("LIEN") ?? throw new InvalidOperationException("Connection string 'CoreMVCContext' not found.")));
+
+builder.Services.AddDbContext<TestContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("TEST") ?? throw new InvalidOperationException("Connection string 'TestContext' not found.")));
+
+builder.Services.AddDbContext<MariaDBContext>(options =>
+    options.UseMySql(builder.Configuration.GetConnectionString("MariaDB") ?? throw new InvalidOperationException("Connection string 'MariaDBContext' not found."),
+                    ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("MariaDB"))));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

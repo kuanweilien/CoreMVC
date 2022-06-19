@@ -8,10 +8,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace CoreMVC.Migrations
+namespace CoreMVC.Migrations.Test
 {
-    [DbContext(typeof(CoreMVCContext))]
-    partial class CoreMVCContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(TestContext))]
+    partial class TestContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
