@@ -7,7 +7,7 @@ namespace CoreMVC.Models
     {
         public static void Initialize(IServiceProvider serviceProvider)
         {
-            using (var context = new CoreMVCContext(serviceProvider.GetRequiredService<DbContextOptions<CoreMVCContext>>()))
+            using (var context = new MariaDBContext(serviceProvider.GetRequiredService<DbContextOptions<MariaDBContext>>()))
             {
                 // Look for any MovieModels.
                 if (context.MovieModel.Any())

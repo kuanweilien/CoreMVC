@@ -12,9 +12,9 @@ namespace CoreMVC.Controllers
 {
     public class MovieModelsController : Controller
     {
-        private readonly CoreMVCContext _context;
+        private readonly MariaDBContext _context;
 
-        public MovieModelsController(CoreMVCContext context)
+        public MovieModelsController(MariaDBContext context)
         {
             _context = context;
         }
