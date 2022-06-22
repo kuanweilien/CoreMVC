@@ -3,6 +3,7 @@ using System;
 using CoreMVC.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CoreMVC.Migrations.MariaMvc
 {
     [DbContext(typeof(MariaDBContext))]
-    partial class MariaDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220621140119_Addphoto")]
+    partial class Addphoto
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -64,9 +66,6 @@ namespace CoreMVC.Migrations.MariaMvc
                     b.Property<byte[]>("Image")
                         .IsRequired()
                         .HasColumnType("longblob");
-
-                    b.Property<string>("ImageName")
-                        .HasColumnType("longtext");
 
                     b.Property<string>("Title")
                         .IsRequired()

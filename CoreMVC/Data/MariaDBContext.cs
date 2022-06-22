@@ -15,5 +15,7 @@ namespace CoreMVC.Data
         public DbSet<CoreMVC.Models.MovieModel>? MovieModel { get; set; }
         
         public DbSet<CoreMVC.Models.StudentModel>? StudentModel { get; set; }
+        
+        public DbSet<CoreMVC.Models.PhotoModel>? PhotoModel { get; set; }
     }
 }
