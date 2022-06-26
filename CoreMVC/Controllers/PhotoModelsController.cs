@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using CoreMVC.Data;
 using CoreMVC.Models;
 using System.IO;
+
 namespace CoreMVC.Controllers
 {
     public class PhotoModelsController : Controller
@@ -19,30 +20,23 @@ namespace CoreMVC.Controllers
             _context = context;
         }
 
+
+        #region---Index---
         // GET: PhotoModels
         public async Task<IActionResult> Index()
         {
             if(_context.PhotoModel != null)
             {
-                List<PhotoModel> photos = await _context.PhotoModel.ToListAsync();
-                Dictionary<int,string> imgUrls = new Dictionary<int, string>();
-                foreach(PhotoModel photo in photos)
-                {
-                    string imageBase64Data = Convert.ToBase64String(photo.Image);
-                    string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
-                    imgUrls.Add(photo.Id, imageDataURL);
-                }
-                ViewData["imgUrls"] = imgUrls;
                 return View(await _context.PhotoModel.ToListAsync());
             }
             else
             {
                 return Problem("Entity set 'MariaDBContext.PhotoModel'  is null.");
             }
-                
-                          
-                          
         }
+        #endregion
+
+        #region---Detail---
         // GET: PhotoModels/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -58,11 +52,12 @@ namespace CoreMVC.Controllers
                 return NotFound();
             }
 
-            LoadPhoto(photoModel.Image);
 
             return View(photoModel);
         }
+        #endregion
 
+        #region---Create---
         // GET: PhotoModels/Create
         public IActionResult Create()
         {
@@ -74,18 +69,19 @@ namespace CoreMVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Description,ImageName,Image")] PhotoModel photoModel)
+        public async Task<IActionResult> Create([Bind("Id,Title,Description,ImageName,Image,FileName,FilePath")] PhotoModel photoModel)
         {
             if (ModelState.IsValid)
             {
-                SetPhoto(photoModel);
-
+                _context.Add(await SetFile(photoModel));
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(photoModel);
         }
+        #endregion
 
+        #region---Edit---
         // GET: PhotoModels/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -99,7 +95,6 @@ namespace CoreMVC.Controllers
             {
                 return NotFound();
             }
-            LoadPhoto(photoModel.Image);
             return View(photoModel);
         }
 
@@ -108,7 +103,7 @@ namespace CoreMVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,Image")] PhotoModel photoModel)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,ImageName,Image,ImageBase64,FileName,FilePath")] PhotoModel photoModel)
         {
             if (id != photoModel.Id)
             {
@@ -119,8 +114,11 @@ namespace CoreMVC.Controllers
             {
                 try
                 {
-                    SetPhoto(photoModel);
-                    _context.Update(photoModel);
+                    if (!string.IsNullOrEmpty(photoModel.ImageBase64))
+                    {
+                        photoModel.Image = Convert.FromBase64String(photoModel.ImageBase64);
+                    }
+                    _context.Update(await SetFile(photoModel));
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -138,7 +136,9 @@ namespace CoreMVC.Controllers
             }
             return View(photoModel);
         }
+        #endregion
 
+        #region---Delete---
         // GET: PhotoModels/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -153,7 +153,6 @@ namespace CoreMVC.Controllers
             {
                 return NotFound();
             }
-            LoadPhoto(photoModel.Image);
 
             return View(photoModel);
         }
@@ -170,38 +169,91 @@ namespace CoreMVC.Controllers
             var photoModel = await _context.PhotoModel.FindAsync(id);
             if (photoModel != null)
             {
+                if (!string.IsNullOrEmpty(photoModel.FilePath))
+                {
+                    System.IO.File.Delete(photoModel.FilePath);
+                }
                 _context.PhotoModel.Remove(photoModel);
             }
             
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+        // POST: PhotoModels/Index/cb1;cb3;cb5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteList(string checkList)
+        {
+            if (_context.PhotoModel == null)
+            {
+                return Problem("Entity set 'MariaDBContext.PhotoModel'  is null.");
+            }
+            if (!string.IsNullOrEmpty(checkList))
+            {
+                List<string> ids = checkList.Replace("cb","").Split(';').ToList();
+                foreach (string id in ids)
+                {
+                    if (!string.IsNullOrEmpty(id))
+                    {
+                        var photoModel = await _context.PhotoModel.FindAsync(Convert.ToInt32(id));
+                        if (photoModel != null)
+                        {
+                            if (!string.IsNullOrEmpty(photoModel.FilePath))
+                            {
+                                System.IO.File.Delete(photoModel.FilePath);
+                            }
+                            _context.PhotoModel.Remove(photoModel);
+                        }
+                    }
+                }
+            }
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+        #endregion
 
         private bool PhotoModelExists(int id)
         {
           return (_context.PhotoModel?.Any(e => e.Id == id)).GetValueOrDefault();
         }
-        private void SetPhoto(PhotoModel photoModel)
+
+        #region---Function---
+        private async Task<PhotoModel> SetFile(PhotoModel photoModel)
         {
             foreach (var file in Request.Form.Files)
             {
-                PhotoModel photo = new PhotoModel();
-                photo.Title = photoModel.Title;
-                photo.Description = photoModel.Description;
-                photo.ImageName = file.FileName;
-                MemoryStream ms = new MemoryStream();
-                file.CopyTo(ms);
-                photo.Image = ms.ToArray();
-                ms.Close();
-                ms.Dispose();
+                switch(file.Name )
+                {
+                    case "inputImage":
+                        photoModel.ImageName = file.FileName;
+                        MemoryStream ms = new MemoryStream();
+                        file.CopyTo(ms);
+                        photoModel.Image = ms.ToArray();
+                        ms.Close();
+                        ms.Dispose();
+                        break;
+                    case "inputFile":
+                        photoModel.FileName = Path.GetFileName(file.FileName);
+                        string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/FileUploads", photoModel.FileName);
+                        if (!string.IsNullOrEmpty(photoModel.FilePath))
+                        {
+                            if (photoModel.FilePath != filePath)
+                            {
+                                System.IO.File.Delete(photoModel.FilePath);
+                            }
+                        }
+                        photoModel.FilePath = filePath;
+                        using (var fileStream = new FileStream(photoModel.FilePath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(fileStream);
+                        }
+                        break;
 
-                _context.Add(photo);
+                }
             }
+            return  photoModel;
         }
-        private void LoadPhoto(byte[] image)
-        {
-            string imageBase64Data = Convert.ToBase64String(image);
-            ViewData["imgUrl"] = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
-        }
+            
+        #endregion
     }
 }

@@ -8,9 +8,9 @@
 
 <h4>PhotoModel</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
+<form asp-action="Edit" enctype="multipart/form-data">
+    <div class="row">
+        <div class="col-md-4">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
@@ -26,25 +26,38 @@
             <div class="form-group">
                 <label asp-for="Image" class="control-label"></label>
                 <input id="inputImage" type="file" asp-for="Image" class="form-control" />
+                <input asp-for="ImageName" class="form-control" type="hidden" />
+                <input asp-for="ImageBase64" class="form-control" type="hidden" />
                 <span asp-validation-for="Image" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FileName" class="control-label"></label>
+                <input id="inputFile" type="file" name="inputFile" asp-for="FileName" class="form-control" />
+                <input asp-for="FilePath" class="form-control" type="hidden"/>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
-        </form>
+        
+        </div>
+        <div class="col-md-4">
+            <img id="img" src="@Html.DisplayFor(model => model.ImageUrl)" width="300px" />
+        </div>
+        <div class="col-md-4">
+            <img id="file" src="@Html.DisplayFor(model => model.FilePathSrc)" width="300px" />
+        </div>
     </div>
-    <div class="col-md-4">
-        <img id="img" src="@(ViewData["imgUrl"])" width="300px" />
-    </div>
-</div>
-
+</form>
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
 
 <script>
     $("#inputImage").change(function () {
-        readURL(this, "img");
+        ShowImageFromUpload(this, "img");
+    });
+    $("#inputFile").change(function () {
+        ShowImageFromUpload(this, "file");
     });
 </script>
 @section Scripts {

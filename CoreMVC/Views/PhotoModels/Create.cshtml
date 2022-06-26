@@ -10,9 +10,9 @@
 
 <h4>PhotoModel</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create" enctype="multipart/form-data">
+<form asp-action="Create" enctype="multipart/form-data">
+    <div class="row">
+        <div class="col-md-4">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Title" class="control-label"></label>
@@ -26,21 +26,29 @@
             </div>
             <div class="form-group">
                 <label asp-for="Image" class="control-label"></label>
-                <input id="inputImage" type="file" asp-for="Image" class="form-control" />
+                <input id="inputImage" type="file" name="inputImage" asp-for="Image" class="form-control" />
                 
                 <span asp-validation-for="Image" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="FileName" class="control-label"></label>
+                <input id="inputFile" type="file" name="inputFile" asp-for="FileName" class="form-control" />
+                
+                <span asp-validation-for="FileName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
-        </form>
-
-
+        </div>
+        <div class="col-md-4">
+            <img id="img" src="#" width="300px" />
+        </div>
+        <div class="col-md-4">
+            <img id="file" src="#" width="300px" />
+        </div>
     </div>
-    <div class="col-md-4">
-        <img id="img" src="#" width="300px" />
-    </div>
-</div>
+</form>
 
 <div>
     <a asp-action="Index">Back to List</a>
@@ -48,7 +56,10 @@
 
 <script>
     $("#inputImage").change(function () {
-        readURL(this, "img");
+        ShowImageFromUpload(this, "img");
+    });
+    $("#inputFile").change(function () {
+        ShowImageFromUpload(this, "file");
     });
 </script>
 

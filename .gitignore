@@ -361,3 +361,9 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# FileUpload
+CoreMVC/wwwroot/FileUploads
+
+# appsetting
+appsettings.json

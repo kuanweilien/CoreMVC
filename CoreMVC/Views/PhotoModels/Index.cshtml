@@ -4,14 +4,23 @@
     ViewData["Title"] = "Index";
 }
 
+
+
 <h1>Index</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
+    <form method="post" asp-action="DeleteList" >
+        <input type="submit" class="=btn btn-danger" value="Delete" />
+        <input id="checkList" name="checkList" type="hidden" />
+    </form>
 </p>
 <table class="table">
     <thead>
         <tr>
+            <th>
+                
+            </th>
             <th>
                 @Html.DisplayNameFor(model => model.Title)
             </th>
@@ -24,6 +33,12 @@
             <th>
                 @Html.DisplayNameFor(model => model.Image)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FileName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FilePath)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -31,6 +46,9 @@
 @foreach (var item in Model) {
     
         <tr>
+            <td>
+                <input id="@Html.DisplayFor(modelItem => item.CheckBoxId)" type="checkbox" />
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Title)
             </td>
@@ -41,9 +59,16 @@
                 @Html.DisplayFor(modelItem => item.ImageName)
             </td>
             <td>
-                <img src="@(((Dictionary<int,string>)ViewData["imgUrls"])[item.Id])" width="300px" />
-                @*@Html.DisplayFor(modelItem => item.Image)*@
+                <img src="@(@Html.DisplayFor(modelItem => item.ImageUrl))" width="100px" />
             </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FileName)
+            </td>
+            <td>
+                <img src="@Html.DisplayFor(modelItem => item.FilePathSrc)" width="100px">
+                
+            </td>
+
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
@@ -53,3 +78,16 @@
 }
     </tbody>
 </table>
+
+
+<script>
+$("input[type='checkbox']").change(function() {
+    var checkList = $("#checkList");
+    if ($(this).prop("checked")) {
+        checkList.val(checkList.val() + $(this).attr('id') + ";");
+    }
+    else {
+        checkList.val(checkList.val().replace($(this).attr('id') + ";", ""));
+    }
+});
+</script>
