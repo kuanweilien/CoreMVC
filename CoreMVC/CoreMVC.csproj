@@ -28,6 +28,7 @@
     <Folder Include="Migrations\MariaMvc\" />
     <Folder Include="Migrations\Test\" />
     <Folder Include="Migrations\SqlServer\" />
+    <Folder Include="wwwroot\FileUploads\" />
   </ItemGroup>
 
 </Project>
