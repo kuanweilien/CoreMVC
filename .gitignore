@@ -363,7 +363,11 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # FileUpload
+<<<<<<< HEAD
 CoreMVC/wwwroot/FileUploads
 
 # appsetting
 appsettings.json
+=======
+CoreMVC/wwwroot/FileUploads
+>>>>>>> 43f6718b6074a93a6456a4eb57ba2719da903e59
