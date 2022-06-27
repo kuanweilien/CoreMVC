@@ -10,11 +10,11 @@
 
 <p>
     <a asp-action="Create">Create New</a>
-    <form method="post" asp-action="DeleteList" >
-        <input type="submit" class="=btn btn-danger" value="Delete" />
-        <input id="checkList" name="checkList" type="hidden" />
-    </form>
 </p>
+<form method="post" asp-action="DeleteList" >
+    <input id="btnDelete" type="submit" class="=btn btn-danger" value="Delete" />
+    <input id="checkList" name="checkList" type="hidden" />
+</form>
 <table class="table">
     <thead>
         <tr>
@@ -65,7 +65,9 @@
                 @Html.DisplayFor(modelItem => item.FileName)
             </td>
             <td>
-                <img src="@Html.DisplayFor(modelItem => item.FilePathSrc)" width="100px">
+                <a href="@Url.Action("DownloadFile",new {id=item.Id})" title="Download file">
+                    <img src="@Html.DisplayFor(modelItem => item.FilePathSrc)" width="100px">
+                </a>
                 
             </td>
 
@@ -89,5 +91,8 @@ $("input[type='checkbox']").change(function() {
     else {
         checkList.val(checkList.val().replace($(this).attr('id') + ";", ""));
     }
+});
+$("#btnDelete").click(function() {
+    return confirm("Confirm Delete ?");
 });
 </script>

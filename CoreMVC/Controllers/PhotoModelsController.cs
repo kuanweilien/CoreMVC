@@ -234,7 +234,7 @@ namespace CoreMVC.Controllers
                         break;
                     case "inputFile":
                         photoModel.FileName = Path.GetFileName(file.FileName);
-                        string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/FileUploads", photoModel.FileName);
+                        string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\FileUploads", photoModel.FileName);
                         if (!string.IsNullOrEmpty(photoModel.FilePath))
                         {
                             if (photoModel.FilePath != filePath)
@@ -253,7 +253,31 @@ namespace CoreMVC.Controllers
             }
             return  photoModel;
         }
-            
+        
+        public async Task<IActionResult> DownloadFile(int? id)
+        {
+            if (_context.PhotoModel == null)
+            {
+                return Problem("Entity set 'MariaDBContext.PhotoModel'  is null.");
+            }
+            var photoModel = await _context.PhotoModel.FindAsync(id);
+            if (photoModel != null)
+            {
+                if (!string.IsNullOrEmpty(photoModel.FilePath))
+                {
+                    FileStream stream = new FileStream(photoModel.FilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    return File(stream, "application/octet-stream", photoModel.FileName);
+                }
+                else
+                {
+                    return Content("<script>alert('no data found!');</script>");
+                }
+            }
+            else
+            {
+                return Content("<script>alert('no data found!');</script>");
+            }
+        }
         #endregion
     }
 }
