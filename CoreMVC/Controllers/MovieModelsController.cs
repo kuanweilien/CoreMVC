@@ -54,7 +54,7 @@ namespace CoreMVC.Controllers
             };
 
             return View(movieGenreVM);
-        }
+        }        
 
         //[HttpPost]
         //public string Index(string searchString, bool notUsed)

@@ -2,11 +2,59 @@
     ViewData["Title"] = "Welcome";
 }
 
+<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
+
+<script>
+    var uri = window.location.origin+'/Product/';
+
+    $(document).ready(function () {
+      // Send an AJAX request
+      $.getJSON(uri+'GetAllProducts')
+          .done(function (data) {
+            // On success, 'data' contains a list of products.
+            $.each(data, function (key, item) {
+              // Add a list item for the product.
+              $('<li>', { text: formatItem(item) }).appendTo($('#products'));
+            });
+          });
+    });
+
+    function formatItem(item) {
+      return item.name + ': $' + item.price;
+    }
+
+    function find() {
+      var id = $('#prodId').val();
+      $.getJSON(uri + 'GetProduct/' + id)
+          .done(function (data) {
+            $('#product').text(formatItem(data));
+          })
+          .fail(function (jqXHR, textStatus, err) {
+            $('#product').text('Error: ' + err);
+          });
+    }
+</script>
+
 <h2>Welcome</h2>
+
+
 
 <ul>
     @for (int i = 0; i < (int)ViewData["NumTimes"]!; i++)
     {
         <li>@ViewData["Message"]</li>
     }
+
+
 </ul>
+
+<div>
+    <h2>All Products</h2>
+    <ul id="products" />
+</div>
+<div>
+    <h2>Search by ID</h2>
+    <input type="text" id="prodId" size="5" />
+    <input type="button" value="Search" onclick="find();" />
+    <p id="product" />
+</div>

@@ -5,3 +5,16 @@
 <h2>My Movie List</h2>
 
 <p>Hello from our View Template!</p>
+
+<textarea id="area" style="width:100%">
+
+</textarea>
+
+<script>
+$(function() {
+    var url = "/HelloWorld/GetProduct";
+    $.getJSON(url, null, function(data) {
+        console.log(data);
+    });
+});
+</script>
