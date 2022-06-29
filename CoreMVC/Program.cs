@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using CoreMVC.Data;
 using CoreMVC.Models;
 using Pomelo.EntityFrameworkCore.MySql;
+using CoreMvc.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<CoreMVCContext>(options =>
@@ -17,7 +18,7 @@ builder.Services.AddDbContext<MariaDBContext>(options =>
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddScoped<Config>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

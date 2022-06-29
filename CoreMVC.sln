@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "方案項目", "方案項�
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreMvc.Api", "CoreMvc.Api\CoreMvc.Api.csproj", "{C86DB46C-E0F4-4AED-BF54-C49A7B995B3F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{66E89B70-5D46-4F60-A5DD-4B3F1F9E53D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{66E89B70-5D46-4F60-A5DD-4B3F1F9E53D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{66E89B70-5D46-4F60-A5DD-4B3F1F9E53D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C86DB46C-E0F4-4AED-BF54-C49A7B995B3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C86DB46C-E0F4-4AED-BF54-C49A7B995B3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C86DB46C-E0F4-4AED-BF54-C49A7B995B3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C86DB46C-E0F4-4AED-BF54-C49A7B995B3F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -65,10 +65,12 @@
                 @Html.DisplayFor(modelItem => item.FileName)
             </td>
             <td>
-                <a href="@Url.Action("DownloadFile",new {id=item.Id})" title="Download file">
-                    <img src="@Html.DisplayFor(modelItem => item.FilePathSrc)" width="100px">
-                </a>
-                
+                @if (!string.IsNullOrEmpty(item.FilePath))
+                {
+                    <a href="@Url.Action("DownloadFile",new {id=item.Id})" title="Download file @Html.DisplayFor(modelItem=>item.FileName)">
+                        <i class="bi bi-download" style="font-size:3rem;color:gray"></i>
+                    </a>
+                }
             </td>
 
             <td>

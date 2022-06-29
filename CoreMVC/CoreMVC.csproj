@@ -31,4 +31,8 @@
     <Folder Include="wwwroot\FileUploads\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CoreMvc.Api\CoreMvc.Api.csproj" />
+  </ItemGroup>
+
 </Project>
