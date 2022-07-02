@@ -5,9 +5,9 @@ namespace CoreMVC.Models
 {
     public class SeedData
     {
-        public static void Initialize(IServiceProvider serviceProvider)
+        public static void Initialize(IServiceProvider serviceProvider,IConfiguration config)
         {
-            using (var context = new MariaDBContext(serviceProvider.GetRequiredService<DbContextOptions<MariaDBContext>>()))
+            using (var context = new MariaDBContext(serviceProvider.GetRequiredService<DbContextOptions<MariaDBContext>>(), config))
             {
                 // Look for any MovieModels.
                 if (context.MovieModel.Any())
@@ -55,7 +55,7 @@ namespace CoreMVC.Models
                 context.SaveChanges();
             }
 
-            using (var context = new MariaDBContext(serviceProvider.GetRequiredService<DbContextOptions<MariaDBContext>>()))
+            using (var context = new MariaDBContext(serviceProvider.GetRequiredService<DbContextOptions<MariaDBContext>>(), config))
             {
                 if (context.StudentModel.Any())
                 {

@@ -3,6 +3,7 @@ using System;
 using CoreMVC.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CoreMVC.Migrations.MariaMvc
 {
     [DbContext(typeof(MariaDBContext))]
-    partial class MariaDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220702072207_AddUser")]
+    partial class AddUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -113,7 +115,7 @@ namespace CoreMVC.Migrations.MariaMvc
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<DateTimeOffset>("CreateDate")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Description")
@@ -125,7 +127,7 @@ namespace CoreMVC.Migrations.MariaMvc
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
-                    b.Property<DateTime>("UpdateDate")
+                    b.Property<DateTimeOffset>("UpdateDate")
                         .HasColumnType("datetime(6)");
 
                     b.Property<int?>("UserModelId")
@@ -144,13 +146,13 @@ namespace CoreMVC.Migrations.MariaMvc
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<DateTimeOffset>("CreateDate")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("RoleName")
                         .HasColumnType("longtext");
 
-                    b.Property<DateTime>("UpdateDate")
+                    b.Property<DateTimeOffset>("UpdateDate")
                         .HasColumnType("datetime(6)");
 
                     b.Property<int?>("UserModelId")
@@ -186,11 +188,7 @@ namespace CoreMVC.Migrations.MariaMvc
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<string>("Address")
-                        .HasMaxLength(512)
-                        .HasColumnType("varchar(512)");
-
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<DateTimeOffset>("CreateDate")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Email")
@@ -205,7 +203,7 @@ namespace CoreMVC.Migrations.MariaMvc
                     b.Property<int?>("Sex")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("UpdateDate")
+                    b.Property<DateTimeOffset>("UpdateDate")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("UserName")

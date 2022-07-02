@@ -13,12 +13,13 @@ builder.Services.AddDbContext<TestContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("TEST") ?? throw new InvalidOperationException("Connection string 'TestContext' not found.")));
 
 builder.Services.AddDbContext<MariaDBContext>(options =>
-    options.UseMySql(builder.Configuration.GetConnectionString("MariaDB") ?? throw new InvalidOperationException("Connection string 'MariaDBContext' not found."),
+    options.UseMySql(builder.Configuration.GetConnectionString("MariaDB") ?? 
+                    throw new InvalidOperationException("Connection string 'MariaDBContext' not found."),
                     ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("MariaDB"))));
 
 // Add services to the container.
+builder.Services.AddSingleton(builder.Configuration);
 builder.Services.AddControllersWithViews();
-builder.Services.AddScoped<Config>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -31,7 +32,7 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
 
-    SeedData.Initialize(services);
+    SeedData.Initialize(services,builder.Configuration);
 }
 
 app.UseStaticFiles();

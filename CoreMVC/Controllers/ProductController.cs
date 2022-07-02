@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using CoreMVC.Models;
-using CoreMvc.Api;
+using System.Security;
 
 namespace CoreMVC.Controllers
 {
@@ -13,13 +13,6 @@ namespace CoreMVC.Controllers
             new ProductModel { Id = 2, Name = "Yo-yo", Category = "Toys", Price = 3.75M },
             new ProductModel { Id = 3, Name = "Hammer", Category = "Hardware", Price = 16.99M }
         };
-
-        private readonly Config config;
-        public ProductController(Config config)
-        {
-            this.config = config;
-        }
-
 
         public IEnumerable<ProductModel> GetAllProducts()
         {
@@ -33,14 +26,6 @@ namespace CoreMVC.Controllers
                 return NotFound();
             }
             return Ok(product);
-        }
-        public IActionResult GetAllowHost()
-        {
-            return Content(config.GetAllowedHosts());
-        }
-        public IActionResult GetApiKey(string keyName)
-        {
-            return Content(config.GetApiKey(keyName));
         }
     }
 }
