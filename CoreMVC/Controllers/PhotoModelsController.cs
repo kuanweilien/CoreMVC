@@ -27,7 +27,26 @@ namespace CoreMVC.Controllers
         {
             if(_context.PhotoModel != null)
             {
-                return View(await _context.PhotoModel.ToListAsync());
+                return View(new List<PhotoModel>());
+            }
+            else
+            {
+                return Problem("Entity set 'MariaDBContext.PhotoModel'  is null.");
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> Index(string searchTitle)
+        {
+            if (_context.PhotoModel != null)
+            {
+                if (string.IsNullOrEmpty(searchTitle))
+                {
+                    return View(await _context.PhotoModel.ToListAsync());
+                }
+                else
+                {
+                    return View(await _context.PhotoModel.Where(x => x.Title.ToUpper().Contains(searchTitle.ToUpper())).ToListAsync());
+                }
             }
             else
             {

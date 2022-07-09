@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CoreMVC.Data;
 using CoreMVC.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CoreMVC.Controllers
 {
+    [Authorize]
     public class MovieModelsController : Controller
     {
         private readonly MariaDBContext _context;

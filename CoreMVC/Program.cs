@@ -1,16 +1,22 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using CoreMVC.Data;
 using CoreMVC.Models;
+using CoreMVC.Areas.Identity.Models;
 using Pomelo.EntityFrameworkCore.MySql;
 using CoreMvc.Api;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
+
+//DB Context
 builder.Services.AddDbContext<CoreMVCContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("LIEN") ?? throw new InvalidOperationException("Connection string 'CoreMVCContext' not found.")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("LIEN") ?? 
+                    throw new InvalidOperationException("Connection string 'CoreMVCContext' not found.")));
 
 builder.Services.AddDbContext<TestContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("TEST") ?? throw new InvalidOperationException("Connection string 'TestContext' not found.")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("TEST") ?? 
+                    throw new InvalidOperationException("Connection string 'TestContext' not found.")));
 
 builder.Services.AddDbContext<MariaDBContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("MariaDB") ?? 
@@ -20,6 +26,25 @@ builder.Services.AddDbContext<MariaDBContext>(options =>
 // Add services to the container.
 builder.Services.AddSingleton(builder.Configuration);
 builder.Services.AddControllersWithViews();
+builder.Services.AddSession();
+
+//Identity
+builder.Services.AddIdentity<AccountModel, AccountRoleModel>(options =>
+        options.SignIn.RequireConfirmedAccount = true) 
+    .AddEntityFrameworkStores<MariaDBContext>()
+    .AddDefaultTokenProviders();
+
+
+builder.Services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequiredLength = 4;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+            }
+        );
+
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -35,14 +60,29 @@ using (var scope = app.Services.CreateScope())
     SeedData.Initialize(services,builder.Configuration);
 }
 
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+//授權
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseSession();
 app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthorization();
+
+
+app.MapAreaControllerRoute(
+        name: "Identity",
+        areaName: "Identity",
+        pattern: "Identity/{controller=Account}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+
 
 app.Run();

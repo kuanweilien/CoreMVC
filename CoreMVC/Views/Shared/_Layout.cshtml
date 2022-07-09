@@ -1,6 +1,11 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
+    @using Microsoft.AspNetCore.Identity
+    @using CoreMVC.Areas.Identity.Models;
+    @inject SignInManager<AccountModel> signInManager
+    @inject UserManager<AccountModel> userManager
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Movie App</title>
@@ -15,7 +20,26 @@
     
 </head>
 <body>
+    
+    <div id="loader" class="bg-secondary 
+                                   text-light 
+                                   w-100 h-100
+                                   position-fixed "
+            style="opacity:0;
+                   z-index:9999"
+            >
+        <div id="spinner"
+             class="spinner-border  
+                    text-primary 
+                    position-fixed 
+                    top-50 start-50" 
+             role="status"
+            style="width: 3rem; height: 3rem;">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
     <header>
+
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="MovieModels" asp-action="">Movie App</a>
@@ -28,26 +52,33 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item d-none d-none">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item d-none">
                             <a class="nav-link text-dark" asp-area="" asp-controller="HelloWorld" asp-action="" >HelloWorld</a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item d-none">
                             <a class="nav-link text-dark" asp-area="" asp-controller="HelloWorld" asp-action="Welcome">Welcome</a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item d-none">
                             <a class="nav-link text-dark" asp-area="" asp-controller="StudentModels" asp-action="Index">Student</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="PhotoModels" asp-action="Index">Photo</a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item d-none">
                             <a class="nav-link text-dark" asp-area="" asp-controller="UserModels" asp-action="Index">User</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="Identity" asp-controller="Account" asp-action="Index">Account</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="Identity" asp-controller="Role" asp-action="Index">Role</a>
                         </li>
                     </ul>
                 </div>
+                <partial name="_LoginPartial" />
             </div>
         </nav>
     </header>

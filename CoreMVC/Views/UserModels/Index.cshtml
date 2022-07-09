@@ -8,6 +8,10 @@
 
 <p>
     <a asp-action="Create">Create New</a>
+    <a asp-action="Login">Login</a>
+    <a asp-protocol="https" asp-host="www.youtube.com" asp-controller="" asp-action="" target="_blank">
+        <p>Youtube <i class="bi bi-box-arrow-up-right"></i></p>
+    </a>
 </p>
 <table class="table">
     <thead>
@@ -63,3 +67,9 @@
 }
     </tbody>
 </table>
+<script>
+$("a").click(function() {
+    console.log("a click");
+
+});
+</script>

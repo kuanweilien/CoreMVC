@@ -10,19 +10,26 @@ using CoreMVC.Data;
 using CoreMVC.Models.User;
 using System.Text;
 using CoreMvc.Api;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication;
 
 namespace CoreMVC.Controllers
 {
+
     public class UserModelsController : Controller
     {
         private readonly MariaDBContext _context;
         private readonly ConfigurationManager _config;
-        public UserModelsController(MariaDBContext context,ConfigurationManager config)
+        private readonly string _passwordKey;
+
+        public UserModelsController(MariaDBContext context,ConfigurationManager config
+            )
         {
             _context = context;
             _config = config;
+            _passwordKey = _config["AppSettings:PasswordKey"];
         }
-
+        #region--Index--
         // GET: UserModels
         public async Task<IActionResult> Index()
         {
@@ -30,7 +37,9 @@ namespace CoreMVC.Controllers
                           View(await _context.UserModel.ToListAsync()) :
                           Problem("Entity set 'MariaDBContext.UserModel'  is null.");
         }
+        #endregion
 
+        #region--Detail--
         // GET: UserModels/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -48,7 +57,9 @@ namespace CoreMVC.Controllers
 
             return View(userModel);
         }
+        #endregion
 
+        #region--Create--
         // GET: UserModels/Create
         public IActionResult Create()
         {
@@ -64,15 +75,14 @@ namespace CoreMVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                string key = _config.GetSection("AppSettings").GetSection("PasswordKey").Value;
-                if (string.IsNullOrEmpty(key))
+                if (string.IsNullOrEmpty(_passwordKey))
                 {
                     throw new ArgumentNullException("PasswordKey is null");
                 }
                 
                 if (!string.IsNullOrEmpty(userModel.Password))
                 {
-                    userModel.Password = Security.PasswordEncrypt(userModel.Password, key);
+                    userModel.Password = Security.PasswordEncrypt(userModel.Password, _passwordKey);
                 }
                 _context.Add(userModel);
                 await _context.SaveChangesAsync();
@@ -80,7 +90,9 @@ namespace CoreMVC.Controllers
             }
             return View(userModel);
         }
+        #endregion
 
+        #region--Edit--
         // GET: UserModels/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -149,7 +161,9 @@ namespace CoreMVC.Controllers
 
             return View(userModel);
         }
+        #endregion
 
+        #region--Delete--
         // POST: UserModels/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -168,11 +182,50 @@ namespace CoreMVC.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+        #endregion
 
         private bool UserModelExists(int id)
         {
           return (_context.UserModel?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+        #region--Login--
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        
+        public IActionResult Login(string Email, string Password)
+        {
+            if (string.IsNullOrEmpty(_passwordKey))
+            {
+                throw new ArgumentNullException("PasswordKey is null");
+            }
+
+            Password = Security.PasswordEncrypt(Password, _passwordKey);
+            IEnumerable<UserModel> users = _context.UserModel.Where(x => x.Email == Email && x.Password == Password);
+            
+            if(users.Count() > 0)
+            {
+                
+                Dictionary<string, string> token = Security.GetLoginToken(Email);
+                Response.Cookies.Append("token", token["account"] + "|" + token["token"]);
+                HttpContext.Session.SetString(token["account"] , token["token"]);
+
+                ViewData["LoginResult"] = "Login Success";
+                return View("Index", users);
+            }
+            else
+            {
+                ViewData["LoginResult"] = "Login Failed , Please check your email or password";
+                return View();
+            }
+            
+        }
+
+        #endregion
 
     }
 }

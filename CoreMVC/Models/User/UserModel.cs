@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
+using Microsoft.AspNetCore.Identity;
 namespace CoreMVC.Models.User
 {
     public class UserModel
@@ -15,6 +15,7 @@ namespace CoreMVC.Models.User
         public string? UserName { get; set; }
         [Required]
         public string? Password { get; set; }
+        public bool? Locked { get; set; }
         public List<RoleModel>? Roles { get; set; }
         public List<GroupModel>? GroupModels { get; set; }
         public UserSex? Sex { get; set; }

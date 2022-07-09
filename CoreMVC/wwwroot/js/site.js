@@ -16,3 +16,24 @@ function ShowImageFromUpload(input, imgId) {
     }
 }
 
+function ShowLoading() {
+    console.log('ShowLoading');
+    $("#loader").fadeTo(300, 0.5);
+    $("#loader").show();
+}
+function HideLoading() {
+    console.log('HideLoading');
+    $("#loader").fadeTo(300, 0);
+    $("#loader").hide();
+}
+
+
+$(window).on('load', function () {
+    console.log('load');
+    HideLoading();
+});
+window.onbeforeunload = function () {
+    console.log('onbeforeunload ');
+    ShowLoading();
+};
+

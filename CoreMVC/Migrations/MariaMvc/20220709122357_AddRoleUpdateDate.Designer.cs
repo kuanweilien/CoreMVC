@@ -3,6 +3,7 @@ using System;
 using CoreMVC.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CoreMVC.Migrations.MariaMvc
 {
     [DbContext(typeof(MariaDBContext))]
-    partial class MariaDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220709122357_AddRoleUpdateDate")]
+    partial class AddRoleUpdateDate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

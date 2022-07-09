@@ -71,5 +71,13 @@ namespace CoreMvc.Api
             var md5 = new MD5CryptoServiceProvider();
             return md5.ComputeHash(bytes);
         }
+
+        public static Dictionary<string,string> GetLoginToken(string account)
+        {
+            Dictionary<string, string> token = new Dictionary<string, string>();
+            token.Add("account", Convert.ToBase64String(SHA256Encrypt(account)));
+            token.Add("token",Guid.NewGuid().ToString());
+            return token;
+        }
     }
 }
