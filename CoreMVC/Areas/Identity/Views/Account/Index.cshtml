@@ -3,8 +3,42 @@
 *@
 @{
 }
-<h1>This is Account Index Page</h1>
+@model List<CoreMVC.Areas.Identity.Models.AccountModel>
 
+<h1>This is Account Index Page</h1>
 
 <a asp-area="Identity" asp-controller="Account" asp-action="Login">Login</a>
 <a asp-area="Identity" asp-controller="Account" asp-action="Register">Register</a>
+
+
+<div class="container">
+    <div class="col-2"></div>
+    <div class="col-10">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(m=>Model.FirstOrDefault().UserName)
+                    </th>
+                    <th>
+                        Assign Role
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @for(int i=0;i<Model.Count();i++)
+                {
+                    <tr>
+                        <td>
+                            @Model[i].UserName
+                        </td>
+                        <td>
+                            @Html.Partial("_DialogPartial", Model[i].AssignRoleDialog)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="col-2"></div>
+</div>

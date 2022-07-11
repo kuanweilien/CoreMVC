@@ -1,0 +1,50 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+    Add Partial :
+    <partial name="_DialogPartial" model="DialogModel" />
+    Override Submit Button : 
+    $("#submitDialog").click(function() {
+
+    });
+*@
+@model CoreMVC.Models.DialogModel;
+
+<!-- Button -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#@Model.DialogId">
+    @Model.DialogButtonName
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="@Model.DialogId" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" @(Model.AllowBackDrop ? "" : "data-bs-backdrop=static")>
+    <div class="modal-dialog @Model.SizeClass">
+        <div class="modal-content">
+            <div class="modal-header p-2">
+                <h5 class="modal-title " id="exampleModalLabel">@Model.Title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" asp-area="@Model.AspAreaName" asp-controller="@Model.AspControllerName" asp-action="@Model.AspActionName">
+                <div class="modal-body">
+                    @Model.Content
+                    @if (!string.IsNullOrEmpty(Model.PartialName))
+                    {
+                        @Html.Partial(@Model.PartialName, Model.PartialModel)
+
+                        @*<partial name="@Model.PartialName" model="Model.PartialModel" />*@
+                    }
+                </div>
+                <div class="modal-footer p-0">
+                    @if(Model.ShowCloseButton)
+                    {
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    }
+                    @if(Model.ShowSubmitButton)
+                    {
+                        <button id="submitDialog" type="submit" class="btn btn-primary">
+                            @Model.SubmitButtonName
+                        </button>
+                    }
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -19,7 +19,6 @@ namespace CoreMVC.Areas.Identity.Controllers
 
         public IActionResult Index()
         {
-            
             return View(_role.Roles);
         }
         public IActionResult Create()

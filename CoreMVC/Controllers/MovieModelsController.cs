@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace CoreMVC.Controllers
 {
-    [Authorize]
     public class MovieModelsController : Controller
     {
         private readonly MariaDBContext _context;

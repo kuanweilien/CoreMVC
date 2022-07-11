@@ -37,3 +37,6 @@ window.onbeforeunload = function () {
     ShowLoading();
 };
 
+$(document).ready(function () {
+    $('#carouselExampleIndicators').carousel();
+});

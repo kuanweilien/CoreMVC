@@ -55,10 +55,6 @@ builder.Services.AddDbContext<{Context Name}>(options =>
 ```
 Install-Package Microsoft.AspNetCore.Identity.EntityFrameworkCore
 ```
-* Modify DB Context
-```cs
-public class YourDBContext : IdentityDbContext<AccountModel,AccountRoleModel,string>
-```
 * IdentityRole Customerlize
 ```cs
 public class NewUserModel:IdentityUser
@@ -74,6 +70,10 @@ public class NewRoleModel:IdentityRole
   [PersonalData]
   public string NewColumn { get; set; }
 }
+```
+* Modify DB Context
+```cs
+public class YourDBContext : IdentityDbContext<NewUserModel,NewRoleModel,string>
 ```
 * Register Program.cs
 ```cs
@@ -94,12 +94,24 @@ builder.Services.Configure<IdentityOptions>(options =>
         );
 ```
 https://docs.microsoft.com/zh-tw/aspnet/core/security/authentication/identity-configuration?view=aspnetcore-6.0
-* inject view
+* inject view (usually add below code in _LoginPartial.cshtml)
 ```
 @using Microsoft.AspNetCore.Identity
 @inject SignInManager<NewUserModel> SignInManager
 @inject UserManager<NewUserModel> UserManager
 ```
+* Issue
+ * This MySqlConnection is already in use
+ > solution : https://stackoverflow.com/questions/53627973/this-mysqlconnection-is-already-in-use
+ * Post List to Controller
+ > Use `for` statement
+ ```
+ @for(int i =0;i<Model.Count();i++)
+ ```
+ > Use `HtmlHelper` in the `for`
+ ```
+ @Html.TextBoxFor(x=>Model[i].Name)
+ ```
 
 ---
 ### ASP.NET - Area

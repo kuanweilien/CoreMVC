@@ -15,11 +15,13 @@ namespace CoreMVC.Areas.Identity.Controllers
         private readonly MariaDBContext _context;
         private readonly SignInManager<AccountModel> _signInManager;
         private readonly UserManager<AccountModel> _userManager;
+        private readonly RoleManager<AccountRoleModel> _roleManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly ConfigurationManager _config;
         public AccountController(MariaDBContext context, 
                                 SignInManager<AccountModel> signInManager,
                                 UserManager<AccountModel> userManager,
+                                RoleManager<AccountRoleModel> roleManager,
                                 ILogger<RegisterModel> logger,
                                 ConfigurationManager config
                                 )
@@ -27,13 +29,45 @@ namespace CoreMVC.Areas.Identity.Controllers
             _context = context;
             _signInManager = signInManager;
             _userManager = userManager;
+            _roleManager = roleManager;
             _logger = logger;
             _config = config;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            List<AccountModel> account = _userManager.Users.ToList();
+            List<AccountRoleModel> roles = _roleManager.Roles.ToList();
+            foreach (var user in account)
+            {
+                #region--Set User Role--
+                List<AccountRoleModel> userRoles = new List<AccountRoleModel>(roles.Count());
+                roles.ForEach((item) =>
+                {
+                    userRoles.Add((AccountRoleModel)item.Clone());
+                });
+                var userRole = await _userManager.GetRolesAsync(user);
+                foreach (var role in userRoles)
+                {
+                    role.Checked = userRole.Contains(role.Name);
+                }
+                user.Roles = userRoles;
+                #endregion
+
+                #region--Set Dialog--
+                user.AssignRoleDialog = new CoreMVC.Models.DialogModel()
+                {
+                    AspAreaName = "Identity",
+                    AspControllerName= "Account",
+                    AspActionName = "AssignRole",
+                    Title="Assign Role",
+                    PartialName= "~/Areas/Identity/Views/Account/_AssignRole.cshtml",
+                    PartialModel= user
+                };
+                #endregion
+
+            }
+            return View(account);
         }
         #region--Login--
         public IActionResult Login()
@@ -125,6 +159,26 @@ namespace CoreMVC.Areas.Identity.Controllers
             }
             return await Task.Run<IActionResult>(() => { return RedirectToAction("Register",new { message = message.ToString()}); });
 
+        }
+        #endregion
+
+        #region--Assign Role--
+        [HttpPost]
+        public async Task< IActionResult> AssignRole(IEnumerable<AccountRoleModel> roles,string Id)
+        {
+            AccountModel account = await _userManager.FindByIdAsync(Id);
+            foreach (var role in roles)
+            {
+                if (role.Checked)
+                {
+                    await _userManager.AddToRoleAsync(account,role.NormalizedName);
+                }
+                else
+                {
+                    await _userManager.RemoveFromRoleAsync(account, role.NormalizedName);
+                }
+            }
+            return RedirectToAction("Index");
         }
         #endregion
     }

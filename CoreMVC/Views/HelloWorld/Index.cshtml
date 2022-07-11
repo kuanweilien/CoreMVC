@@ -1,11 +1,19 @@
 ﻿@{
-    ViewData["Title"] = "Movie List";
+    ViewData["Title"] = "Hello World";
 }
+@model CoreMVC.Models.HelloWorldModel
+<div>
+    <h2>Hello Wrold</h2>
+    <p>Hello from our View Template!</p>
 
-<h2>My Movie List</h2>
+    @* Dialog *@
+    <div>
+        <partial name="_DialogPartial" model="Model.Dialog" ></partial>
+    </div>
 
-<p>Hello from our View Template!</p>
+    @* Carousel *@
+    <div class="d-none">
+        <partial name="_CarouselPartial" ></partial>
+    </div>
 
-<textarea id="area" style="width:100%">
-
-</textarea>
+</div>

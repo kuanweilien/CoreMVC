@@ -1,0 +1,40 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model CoreMVC.Areas.Identity.Models.AccountModel
+@{
+    var roles = Model.Roles.ToList();
+
+    <div class="container">
+                <table id="roleList" class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(m=>roles.FirstOrDefault().Name)
+                            </th>
+                            <th>
+
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for(int i =0;i<roles.Count();i++)
+            {
+                            <tr>
+                                <td>
+                                    @Html.CheckBoxFor(x=>roles[i].Checked)
+                                    @Html.HiddenFor(x=>roles[i].Id)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(x=>roles[i].Name)
+                                    @Html.HiddenFor(x=>roles[i].NormalizedName)
+                                </td>
+                            </tr>
+            }
+                    </tbody>
+                </table>
+                @Html.HiddenFor(x=> Model.Id)
+    </div>
+}

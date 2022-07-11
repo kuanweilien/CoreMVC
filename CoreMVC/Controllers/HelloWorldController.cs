@@ -16,7 +16,24 @@ namespace CoreMVC.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            HelloWorldModel model = new HelloWorldModel();
+            model.CarouselModels = new List<CarouselModel>()
+            {
+                new CarouselModel(){PhotoName="Photo1",PhotoPath="/FileUploads/mountains-7ddde89.jpg" },
+                new CarouselModel(){PhotoName="Photo2",PhotoPath="/FileUploads/p0b926m6.jpg" },
+                new CarouselModel(){PhotoName="Photo3",PhotoPath="/FileUploads/somalaya-mountain.jpg" }
+            };
+            model.Dialog = new DialogModel()
+            {
+                Title = "This is Dialog Title",
+                Content = "This is Dialog Content ! ",
+                AllowBackDrop= false,
+                AspControllerName= "HelloWorld"
+
+
+            };
+
+            return View(model);
         }
 
         // GET: /HelloWorld/Welcome/ 
