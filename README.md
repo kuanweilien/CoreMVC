@@ -143,3 +143,17 @@ Install-Package Microsoft.AspNetCore.Authentication.Google
 ```
 
 * Modify Program.cs
+```cs
+builder.Services.AddAuthentication(o =>
+    {
+        o.DefaultScheme = "Application";
+        o.DefaultSignInScheme = "External";
+    })
+    .AddCookie("Application")
+    .AddCookie("External")
+    .AddGoogle(o =>
+    {
+        o.ClientId = builder.Configuration["AppSettings:GoogleOAuth:ClientId"];
+        o.ClientSecret = builder.Configuration["AppSettings:GoogleOAuth:ClientSecret"];
+    });
+```
