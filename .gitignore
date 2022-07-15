@@ -368,3 +368,4 @@ CoreMVC/wwwroot/FileUploads/*
 
 # appsetting
 appsettings.json
+oauth2-google.json

@@ -34,7 +34,7 @@ builder.Services.AddIdentity<AccountModel, AccountRoleModel>(options =>
     .AddEntityFrameworkStores<MariaDBContext>()
     .AddDefaultTokenProviders();
 
-
+//Password Rule
 builder.Services.Configure<IdentityOptions>(options =>
             {
                 options.Password.RequiredLength = 4;
@@ -43,9 +43,39 @@ builder.Services.Configure<IdentityOptions>(options =>
             }
         );
 
+//Authorize Redirect
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    // Cookie settings
+    options.Cookie.HttpOnly = true;
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+
+    options.LoginPath = "/Identity/Account/Login";
+    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+    options.SlidingExpiration = true;
+});
+
+
+//OAuth - Google
+builder.Services.AddAuthentication(o =>
+    {
+        o.DefaultScheme = "Application";
+        o.DefaultSignInScheme = "External";
+    })
+    .AddCookie("Application")
+    .AddCookie("External")
+    .AddGoogle(o =>
+    {
+        o.ClientId = builder.Configuration["AppSettings:GoogleOAuth:ClientId"];
+        o.ClientSecret = builder.Configuration["AppSettings:GoogleOAuth:ClientSecret"];
+    });
+
+
 
 
 var app = builder.Build();
+
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -65,12 +95,17 @@ app.UseStaticFiles();
 
 //授權
 app.UseAuthentication();
+app.UseRouting();
 app.UseAuthorization();
 
 app.UseSession();
 app.UseStaticFiles();
 
-app.UseRouting();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
+
 
 
 

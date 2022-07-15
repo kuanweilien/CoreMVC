@@ -4,13 +4,16 @@
 @{
 }
 @model List<CoreMVC.Areas.Identity.Models.AccountModel>
+@using Microsoft.AspNetCore.Identity
+@using CoreMVC.Areas.Identity.Models;
+@inject SignInManager<AccountModel> SignInManager
+@inject UserManager<AccountModel> UserManager
+
+
 
 <h1>This is Account Index Page</h1>
-
-<a asp-area="Identity" asp-controller="Account" asp-action="Login">Login</a>
-<a asp-area="Identity" asp-controller="Account" asp-action="Register">Register</a>
-
-
+@if(SignInManager.IsSignedIn(User))
+{
 <div class="container">
     <div class="col-2"></div>
     <div class="col-10">
@@ -42,3 +45,8 @@
     </div>
     <div class="col-2"></div>
 </div>
+}
+else
+{
+    <a asp-action="Login">Login</a>
+}

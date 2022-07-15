@@ -135,3 +135,11 @@ app.MapAreaControllerRoute(
         areaName: "Identity",  //Area Name
         pattern: "Identity/{controller=Account}/{action=Index}/{id?}");
 ```
+
+### OAuth - Google
+* Install Package
+```
+Install-Package Microsoft.AspNetCore.Authentication.Google
+```
+
+* Modify Program.cs

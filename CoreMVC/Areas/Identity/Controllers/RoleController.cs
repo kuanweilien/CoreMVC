@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using CoreMVC.Areas.Identity.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CoreMVC.Areas.Identity.Controllers
 {
@@ -16,7 +17,7 @@ namespace CoreMVC.Areas.Identity.Controllers
             _role = role;
             _roleStore = roleStore;
         }
-
+        [Authorize(Roles ="admin")]
         public IActionResult Index()
         {
             return View(_role.Roles);
@@ -26,6 +27,7 @@ namespace CoreMVC.Areas.Identity.Controllers
             return View();
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(AccountRoleModel role)
         {
             if (ModelState.IsValid)
@@ -38,6 +40,7 @@ namespace CoreMVC.Areas.Identity.Controllers
             return View();
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(AccountRoleModel role)
         {
             AccountRoleModel newRole = _role.Roles.Where(x => x.Id == role.Id).First();

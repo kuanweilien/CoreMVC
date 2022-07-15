@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="6.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.6" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.6" />
@@ -36,6 +37,7 @@
     <Folder Include="Migrations\Test\" />
     <Folder Include="Migrations\SqlServer\" />
     <Folder Include="wwwroot\FileUploads\" />
+    <Folder Include="wwwroot\json\" />
   </ItemGroup>
 
   <ItemGroup>
