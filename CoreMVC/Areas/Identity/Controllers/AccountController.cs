@@ -152,6 +152,7 @@ namespace CoreMVC.Areas.Identity.Controllers
                 account.CreationDate = DateTime.Now;
                 account.UpdateDate = DateTime.Now;
                 account.Email = register.Email;
+                account.UserName = register.Email.Split('@').FirstOrDefault();
 
                 return await RunRegister(account, register.Password);
 
@@ -164,8 +165,6 @@ namespace CoreMVC.Areas.Identity.Controllers
         }
         private async Task<IActionResult> RunRegister(AccountModel account,string password = "")
         {
-            string returnUrl = $"http://{_config["AppSettings:HostName"]}";
-            StringBuilder message = new StringBuilder();
             IdentityResult result;
             if (string.IsNullOrEmpty(password))
             {
@@ -181,17 +180,8 @@ namespace CoreMVC.Areas.Identity.Controllers
                 _logger.LogInformation("User created a new account with password.");
                 if (!string.IsNullOrEmpty(password))
                 {
-                    var userId = await _userManager.GetUserIdAsync(account);
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(account);
-                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-
-                    var callbackUrl = Url.Action(
-                        action: "ConfirmEmail",
-                        controller: "Account",
-                        values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
-                        protocol: Request.Scheme);
-
-                    Mail.SendGmail("Core MVC Confirm Email", $"Please click the link to confirm your email : <a href='{callbackUrl}'>Click here</a>", account.Email, _config);
+                    string token = await _userManager.GenerateEmailConfirmationTokenAsync(account);
+                    SendMail(account, "Core MVC Confirm Email", "Please click the link to confirm your email :", token, "ConfirmEmail");
                 }
                 else
                 {
@@ -202,34 +192,29 @@ namespace CoreMVC.Areas.Identity.Controllers
                 //add default role
                 await _userManager.AddToRoleAsync(account, "user");
 
-                return await Task.Run<IActionResult>(() => { return RedirectToAction("Login"); });
+                return RedirectToAction("Login");
             }
             else
             {
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                    message.Append(error.Description + ";");
-                }
+                TempData["message"] = GetErrorMessage(result);
             }
-            return await Task.Run<IActionResult>(() => { return RedirectToAction("Register", new { message = message.ToString() }); });
+            return RedirectToAction("Register");
         }
-        #endregion
         [AllowAnonymous]
-        public async Task<IActionResult> ConfirmEmail(string userId,string code)
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
             string message = "";
-            AccountModel account =await _userManager.FindByIdAsync(userId);
-            if(account != null)
+            AccountModel account = await _userManager.FindByIdAsync(userId);
+            if (account != null)
             {
-                code = Encoding.UTF8.GetString( WebEncoders.Base64UrlDecode(code));
+                token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(token));
 
-                IdentityResult result = await _userManager.ConfirmEmailAsync(account, code);
+                IdentityResult result = await _userManager.ConfirmEmailAsync(account, token);
                 if (result.Succeeded)
                 {
                     message = "Sueccess";
-                    await _signInManager.SignInAsync(account,false);
-                    
+                    await _signInManager.SignInAsync(account, false);
+
                 }
             }
             else
@@ -238,6 +223,7 @@ namespace CoreMVC.Areas.Identity.Controllers
             }
             return RedirectToHome(message);
         }
+        #endregion
 
         #region--Delete User--
         [HttpPost]
@@ -351,6 +337,7 @@ namespace CoreMVC.Areas.Identity.Controllers
         }
         #endregion
 
+        #region--Reddirect--
         public IActionResult RedirectToHome()
         {
             return RedirectToAction("Index", "Home", new { Area = "" });
@@ -358,6 +345,93 @@ namespace CoreMVC.Areas.Identity.Controllers
         public IActionResult RedirectToHome(string message)
         {
             return RedirectToAction("Index", "Home", new { Area = "",Message = message });
+        }
+        #endregion
+
+        #region--Reset Password--
+        public IActionResult ForgetPassword()
+        {
+            return View();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgetPasswordSendMail(string email)
+        {
+            AccountModel account =await _userManager.FindByEmailAsync(email);
+            if(account != null)
+            {
+                string token = await _userManager.GeneratePasswordResetTokenAsync(account);
+                SendMail(account, "CoreMVC Reset Password", "Please click the link to reset passwrod : ", token, "ResetPassword");
+                TempData["message"] = "Go your Email to click reset password link";
+            }
+            else
+            {
+                TempData["message"] = "Email not found";
+            }
+
+            return RedirectToAction("ForgetPassword");
+        }
+        public async Task<IActionResult> ResetPassword(string userId, string token)
+        {
+            ForgetPasswordModel forget = new ForgetPasswordModel();
+            AccountModel account = await _userManager.FindByIdAsync(userId);
+            if (account != null)
+            {
+                token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(token));
+                forget.Email = account.Email;
+                forget.Token = token;
+            }
+            return View(forget);
+        }
+        public async Task<IActionResult> ResetPasswordConfirm(ForgetPasswordModel forget)
+        {
+            if (ModelState.IsValid)
+            {
+                AccountModel account = await _userManager.FindByEmailAsync(forget.Email);
+                IdentityResult result = await _userManager.ResetPasswordAsync(account, forget.Token, forget.Password);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("Login");
+                }
+                else
+                {
+                    TempData["message"] = GetErrorMessage(result);
+                }
+            }
+            return RedirectToAction("ResetPassword");
+        }
+        #endregion
+
+        #region--Send Mail--
+        public async void SendMail(AccountModel account,string subject,string content,string token,string returnAction)
+        {
+            string returnUrl = $"{_config["AppSettings:Protocol"]}://{_config["AppSettings:HostName"]}";
+
+            var userId = await _userManager.GetUserIdAsync(account);
+            
+
+            token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+
+            var callbackUrl = Url.Action(
+                action: returnAction,
+                controller: "Account",
+                values: new { area = "Identity", userId = userId, token = token, returnUrl = returnUrl },
+                protocol: Request.Scheme);
+
+            Mail.SendGmail(subject, content + $" {callbackUrl} ", account.Email, _config);
+        }
+
+        #endregion
+
+        private string GetErrorMessage(IdentityResult result,string messageKey = "Message")
+        {
+            StringBuilder message = new StringBuilder();
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(messageKey, error.Description);
+                message.Append(error.Description + ";");
+            }
+            return message.ToString();
         }
     }
 }
