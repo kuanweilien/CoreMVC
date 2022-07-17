@@ -15,6 +15,7 @@
 Update-Database
 ```
 
+
 ### Migration - Multiple Database
 * Add Connection String on appsettings.json
 * Add DBContext under /Data
@@ -157,3 +158,5 @@ builder.Services.AddAuthentication(o =>
         o.ClientSecret = builder.Configuration["AppSettings:GoogleOAuth:ClientSecret"];
     });
 ```
+
+### WebApi

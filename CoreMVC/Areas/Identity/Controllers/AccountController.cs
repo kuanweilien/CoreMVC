@@ -66,6 +66,7 @@ namespace CoreMVC.Areas.Identity.Controllers
                     AspControllerName = "Account",
                     AspActionName = "AssignRole",
                     Title = "Assign Role",
+                    DialogButtonName = "Roles",
                     PartialName = "~/Areas/Identity/Views/Account/_AssignRole.cshtml",
                     PartialModel = user
                 };
@@ -89,7 +90,7 @@ namespace CoreMVC.Areas.Identity.Controllers
         {
             if (_signInManager.IsSignedIn(User))
             {
-                return RedirectToAction("Index", "Home", new { Area = "" });
+                return RedirectToHome();
             }
             else
             {
@@ -108,7 +109,7 @@ namespace CoreMVC.Areas.Identity.Controllers
                 if (passwordOK)
                 {
                     await _signInManager.SignInAsync(account, true);
-                    return RedirectToAction("Index", "Home", new { Area = "" });
+                    return RedirectToHome();
                 }
             }
 
@@ -184,14 +185,23 @@ namespace CoreMVC.Areas.Identity.Controllers
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(account);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
 
-                    var callbackUrl = Url.Page(
-                        "/Account/ConfirmEmail",
-                        pageHandler: null,
+                    var callbackUrl = Url.Action(
+                        action: "ConfirmEmail",
+                        controller: "Account",
                         values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
 
-                    Mail.SendGmail("Core MVC Confirm Email", $"Please click the link to confirm your email : {callbackUrl}", account.Email, _config);
+                    Mail.SendGmail("Core MVC Confirm Email", $"Please click the link to confirm your email : <a href='{callbackUrl}'>Click here</a>", account.Email, _config);
                 }
+                else
+                {
+                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(account);
+                    await _userManager.ConfirmEmailAsync(account, code);
+                }
+
+                //add default role
+                await _userManager.AddToRoleAsync(account, "user");
+
                 return await Task.Run<IActionResult>(() => { return RedirectToAction("Login"); });
             }
             else
@@ -203,6 +213,45 @@ namespace CoreMVC.Areas.Identity.Controllers
                 }
             }
             return await Task.Run<IActionResult>(() => { return RedirectToAction("Register", new { message = message.ToString() }); });
+        }
+        #endregion
+        [AllowAnonymous]
+        public async Task<IActionResult> ConfirmEmail(string userId,string code)
+        {
+            string message = "";
+            AccountModel account =await _userManager.FindByIdAsync(userId);
+            if(account != null)
+            {
+                code = Encoding.UTF8.GetString( WebEncoders.Base64UrlDecode(code));
+
+                IdentityResult result = await _userManager.ConfirmEmailAsync(account, code);
+                if (result.Succeeded)
+                {
+                    message = "Sueccess";
+                    await _signInManager.SignInAsync(account,false);
+                    
+                }
+            }
+            else
+            {
+                message = "Failed";
+            }
+            return RedirectToHome(message);
+        }
+
+        #region--Delete User--
+        [HttpPost]
+        [Authorize(Roles ="admin")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(string email)
+        {
+            AccountModel account =await _userManager.FindByEmailAsync(email);
+            IdentityResult result = await _userManager.DeleteAsync(account);
+            if (!result.Succeeded)
+            {
+                ViewData["message"] = "DeleteFailed";
+            }
+            return RedirectToAction("Index", "Account");
         }
         #endregion
 
@@ -289,7 +338,7 @@ namespace CoreMVC.Areas.Identity.Controllers
             else
             {
                 await _signInManager.SignInAsync(account, isPersistent: false);
-                return RedirectToAction("Index", "Home", new { Area = "" });
+                return RedirectToHome();
             }
             
         }
@@ -297,9 +346,18 @@ namespace CoreMVC.Areas.Identity.Controllers
         {
             AccountModel account = new AccountModel();
             account.Email = claims.FindFirstValue(ClaimTypes.Email);
-            account.UserName = claims.FindFirstValue(ClaimTypes.Name).Replace(" ", "");
+            account.UserName = claims.FindFirstValue(ClaimTypes.Email).Split('@').First();
             return account;
         }
         #endregion
+
+        public IActionResult RedirectToHome()
+        {
+            return RedirectToAction("Index", "Home", new { Area = "" });
+        }
+        public IActionResult RedirectToHome(string message)
+        {
+            return RedirectToAction("Index", "Home", new { Area = "",Message = message });
+        }
     }
 }

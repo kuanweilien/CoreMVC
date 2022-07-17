@@ -20,6 +20,8 @@ function ShowLoading() {
     console.log('ShowLoading');
     $("#loader").fadeTo(300, 0.5);
     $("#loader").show();
+    $("#loader").css('cursor', 'wait'); // 'default' to revert
+
 }
 function HideLoading() {
     console.log('HideLoading');

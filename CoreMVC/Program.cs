@@ -71,8 +71,6 @@ builder.Services.AddAuthentication(o =>
     });
 
 
-
-
 var app = builder.Build();
 
 
@@ -87,7 +85,8 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
 
-    SeedData.Initialize(services,builder.Configuration);
+    SeedData.Initialize(services);
+    string defaultAdmin = await SeedData.DefaultAccount(services);
 }
 
 app.UseHttpsRedirection();
@@ -105,7 +104,6 @@ app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
 });
-
 
 
 

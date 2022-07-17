@@ -1,21 +1,22 @@
 ﻿using CoreMVC.Data;
+using CoreMVC.Areas.Identity.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using CoreMVC.Areas.Shop.Models;
 
 namespace CoreMVC.Models
 {
     public class SeedData
     {
-        public static void Initialize(IServiceProvider serviceProvider,IConfiguration config)
+        public static void Initialize(IServiceProvider serviceProvider)
         {
-            using (var context = new MariaDBContext(serviceProvider.GetRequiredService<DbContextOptions<MariaDBContext>>(), config))
+            using (var context = new MariaDBContext(serviceProvider.GetRequiredService<DbContextOptions<MariaDBContext>>()))
             {
                 // Look for any MovieModels.
-                if (context.MovieModel.Any())
+                if (!context.MovieModel.Any())
                 {
-                    return;   // DB has been seeded
-                }
-
-                context.MovieModel.AddRange(
+                    context.MovieModel.AddRange(
                     new MovieModel
                     {
                         Title = "When Harry Met Sally",
@@ -52,16 +53,15 @@ namespace CoreMVC.Models
                         Price = 3.99M
                     }
                 );
-                context.SaveChanges();
+                    context.SaveChanges();
+                }
             }
 
-            using (var context = new MariaDBContext(serviceProvider.GetRequiredService<DbContextOptions<MariaDBContext>>(), config))
+            using (var context = new MariaDBContext(serviceProvider.GetRequiredService<DbContextOptions<MariaDBContext>>()))
             {
-                if (context.StudentModel.Any())
+                if (!context.StudentModel.Any())
                 {
-                    return;   // DB has been seeded
-                }
-                context.StudentModel.AddRange(
+                    context.StudentModel.AddRange(
                    new StudentModel
                    {
                        StudentName = "Ben",
@@ -73,7 +73,7 @@ namespace CoreMVC.Models
                        StudentName = "Sandy",
                        StudentNumber = 24,
                        Sex = 0
-                   }, 
+                   },
                    new StudentModel
                    {
                        StudentName = "David",
@@ -81,8 +81,64 @@ namespace CoreMVC.Models
                        Sex = 1
                    }
                    );
-                context.SaveChanges();
+                    context.SaveChanges();
+                }
+                
             }
+
+            using (var context = new MariaDBContext(serviceProvider.GetRequiredService<DbContextOptions<MariaDBContext>>()))
+            {
+                if (!context.ItemModel.Any())
+                {
+                    context.ItemModel.AddRange(
+                    new ItemModel() { Name = "iPhone X", CreationDate = DateTime.Now },
+                    new ItemModel() { Name = "Zenfone 3", CreationDate = DateTime.Now },
+                    new ItemModel() { Name = "Galaxy A52S", CreationDate = DateTime.Now }
+                   );
+                   context.SaveChanges();
+                }
+                
+            }
+
+            
+        }
+        public static async Task<string> DefaultAccount(IServiceProvider serviceProvider)
+        {
+            IConfiguration config = serviceProvider.GetRequiredService<IConfiguration>();
+
+            using (var roleManager = serviceProvider.GetRequiredService<RoleManager<AccountRoleModel>>())
+            {
+                if (roleManager.Roles.Count() == 0)
+                {
+                    IConfigurationSection roles = config.GetSection("AppSettings:DefaultAccount:Roles");
+                    foreach (KeyValuePair<string,string> roleName in roles.AsEnumerable())
+                    {
+                        AccountRoleModel role = new AccountRoleModel();
+                        role.CreationDate = DateTime.Now;
+                        role.UpdateDate = DateTime.Now;
+                        role.Name = roleName.Value;
+                        await roleManager.CreateAsync(role);
+                    }
+                    
+                }
+            }
+
+            using (var userManager = serviceProvider.GetRequiredService<UserManager<AccountModel>>())
+            {
+
+                if (userManager.Users.Count() == 0)
+                {
+                    AccountModel account = new AccountModel();
+                    account.Email = config["AppSettings:DefaultAccount:Email"];
+                    account.UserName = config["AppSettings:DefaultAccount:Account"];
+                    account.CreationDate = DateTime.Now;
+                    account.UpdateDate = DateTime.Now;
+                    await userManager.CreateAsync(account, config["AppSettings:DefaultAccount:Password"]);
+                }
+                AccountModel admin = await userManager.FindByEmailAsync(config["AppSettings:DefaultAccount:Email"]);
+                await userManager.AddToRoleAsync(admin, config["AppSettings:DefaultAccount:Roles:0"]);
+            }
+            return string.Empty;
         }
     }
 }

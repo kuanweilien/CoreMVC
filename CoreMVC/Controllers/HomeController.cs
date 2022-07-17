@@ -13,8 +13,12 @@ namespace CoreMVC.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string Message)
         {
+            if(Message != null)
+            {
+                ViewData["Message"] = Message;
+            }
             return View();
         }
 

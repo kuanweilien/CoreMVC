@@ -3,15 +3,13 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using CoreMVC.Models;
 using CoreMVC.Areas.Identity.Models;
 using CoreMVC.Models.User;
+using CoreMVC.Areas.Shop.Models;
 namespace CoreMVC.Data
 {
     public class MariaDBContext : IdentityDbContext<AccountModel,AccountRoleModel,string>
     {
-        public IConfiguration configuration;
-        public MariaDBContext(DbContextOptions<MariaDBContext> options,IConfiguration configuration) : base(options)
+        public MariaDBContext(DbContextOptions<MariaDBContext> options) : base(options)
         {
-            this.configuration = configuration;
-
         }
         
         public DbSet<CoreMVC.Models.MovieModel>? MovieModel { get; set; }
@@ -25,5 +23,6 @@ namespace CoreMVC.Data
         public DbSet<CoreMVC.Models.User.UserGroupModel>? UserGroupModel { get; set; }
         public DbSet<CoreMVC.Areas.Identity.Models.AccountModel>? AccountModel { get; set; }
         public DbSet<CoreMVC.Areas.Identity.Models.AccountRoleModel>? AccountRoleModel { get; set; }
+        public DbSet<CoreMVC.Areas.Shop.Models.ItemModel>? ItemModel { get; set; }
     }
 }

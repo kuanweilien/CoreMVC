@@ -24,7 +24,7 @@
                         @Html.DisplayNameFor(m=>Model.FirstOrDefault().UserName)
                     </th>
                     <th>
-                        Assign Role
+                        Maintain
                     </th>
                 </tr>
             </thead>
@@ -37,6 +37,10 @@
                         </td>
                         <td>
                             @Html.Partial("_DialogPartial", Model[i].AssignRoleDialog)
+                            <form method="post" asp-action="Delete">
+                                <input type="hidden" name="email" value="@Model[i].Email">
+                                <input type="submit" value="Delete" class="btn btn-danger">
+                            </form>
                         </td>
                     </tr>
                 }
